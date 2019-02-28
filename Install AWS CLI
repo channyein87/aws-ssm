@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "2.2",
+  "description": "Install AWS CLI",
+  "mainSteps": [
+    {
+      "action": "aws:runPowerShellScript",
+      "name": "InstallAwsCli",
+      "inputs": {
+        "runCommand": [
+          "",
+          "$installables = 'C:\\Installables'",
+          "if ((Test-Path $installables) -eq $true) { Write-Host 'Installables folder already existed' }",
+          "else { New-Item -ItemType Directory -Name Installables -Path C:\\ }",
+          "$url = 'https://s3.amazonaws.com/aws-cli/AWSCLI64PY3.msi'",
+          "$output = 'C:\\Installables\\AWSCLI64PY3.msi'",
+          "$start_time = Get-Date",
+          "Invoke-WebRequest -Uri $url -OutFile $output",
+          "Write-Output \"Copy time: $((Get-Date).Subtract($start_time).Seconds) second(s)\"",
+          "$awscli = Get-WmiObject win32_product | where { $_.Name -clike 'AWS Command Line Interface'}",
+          "if ($awscli -eq $null) {Write-Host 'Installing AWS CLI ...'",
+          "    $installawscli = Start-Process -FilePath msiexec -ArgumentList '/i C:\\Installables\\AWSCLI64PY3.msi /qn /norestart' -Wait -NoNewWindow",
+          "    Write-Output \"Exit Code: $($installawscli.ExitCode)\"}",
+          "else {Write-Host 'AWS CLI is already installed'}",
+          ""
+        ]
+      }
+    }
+  ]
+}
